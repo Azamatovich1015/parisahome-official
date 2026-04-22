@@ -11,8 +11,8 @@ func main() {
 
 	r.GET("/", func(c *gin.Context) {
 		c.JSON(200, gin.H{
-			"status":  "Ishlayapti",
-			"message": "25-aprel kuni ishga muvaffaqiyatli borishingizni tilayman!",
+
+			"message": "Zar seni yaxshi koraman ",
 		})
 	})
 
