@@ -10,16 +10,15 @@ import (
 func main() {
 	r := gin.Default()
 
-	// templates papkasini ulaymiz
+	//templates papkasini yuklash
 	r.LoadHTMLGlob("templates/*")
 
 	r.GET("/", func(c *gin.Context) {
 		c.HTML(http.StatusOK, "index.html", gin.H{
-			"Message": "XMXMXMXMXMXMXMXMX",
+			"Message": "Zar, men seni juda yaxshi ko'raman!",
 		})
 	})
 
-	// Port sozlamasi (Render uchun)
 	port := os.Getenv("PORT")
 	if port == "" {
 		port = "8080"
