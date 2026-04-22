@@ -18,6 +18,15 @@
 </head>
 <body>
     <div class="card">
+        <form action="/reply" method="POST" style="margin-top: 20px;">
+    <input type="text" name="reply_text" placeholder="Menga javob yozing..." required 
+           style="padding: 10px; border-radius: 10px; border: 1px solid #ddd; width: 80%; outline: none;">
+    <br>
+    <button type="submit" 
+            style="margin-top: 10px; padding: 10px 20px; background: #ff4b2b; color: white; border: none; border-radius: 20px; cursor: pointer;">
+        Yuborish
+    </button>
+</form>
         <div class="heart-main">❤️</div>
         <p style="color: #ff4b2b; font-size: 20px; font-weight: bold;">{{.Message}}</p>
         
