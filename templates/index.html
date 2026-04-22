@@ -5,28 +5,41 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Siz uchun maxsus</title>
     <style>
-        body { margin: 0; height: 100vh; overflow: hidden; display: flex; justify-content: center; align-items: center; background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%); font-family: 'Segoe UI', sans-serif; }
-        .card { background: rgb(228, 237, 65); padding: 40px; border-radius: 30px; box-shadow: 0 15px 35px rgba(0,0,0,0.2); text-align: center; max-width: 380px; width: 90%; z-index: 10; }
-        .heart-main { color: #ff4b2b; font-size: 70px; animation: beat .4s infinite alternate; }
+        body { margin: 0; height: 100vh; overflow: hidden; display: flex; justify-content: center; align-items: center; background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%); font-family: sans-serif; }
+        .card { background: white; padding: 40px; border-radius: 30px; box-shadow: 0 15px 35px rgba(0,0,0,0.2); text-align: center; max-width: 350px; width: 85%; z-index: 10; }
+        .heart-main { color: #ff4b2b; font-size: 70px; animation: beat .4s infinite alternate; cursor: pointer; }
         @keyframes beat { to { transform: scale(1.1); } }
         .floating-heart { position: absolute; color: #ff4b2b; opacity: 0.6; font-size: 20px; animation: float 4s linear infinite; pointer-events: none; }
         @keyframes float { 0% { transform: translateY(100vh) rotate(0deg); opacity: 1; } 100% { transform: translateY(-10vh) rotate(360deg); opacity: 0; } }
-        input { padding: 15px; border-radius: 15px; border: 1px solid #ff9a9e; width: 85%; margin-top: 20px; outline: none; font-size: 16px; }
-        button { margin-top: 15px; padding: 12px 25px; background: #ff4b2b; color: white; border: none; border-radius: 25px; cursor: pointer; font-size: 16px; transition: 0.3s; }
-        button:hover { background: hsl(9, 86%, 43%); transform: scale(1.05); }
+        input { padding: 12px; border-radius: 12px; border: 1px solid #ff9a9e; width: 85%; margin-top: 20px; outline: none; }
+        button { margin-top: 15px; padding: 10px 25px; background: #ff4b2b; color: white; border: none; border-radius: 20px; cursor: pointer; transition: 0.3s; }
+        button:hover { transform: scale(1.1); }
+        #musicBtn { position: fixed; bottom: 20px; right: 20px; font-size: 30px; cursor: pointer; z-index: 100; }
     </style>
 </head>
 <body>
+    <audio id="bgMusic" loop>
+        <source src="https://www.bensound.com/bensound-music/bensound-love.mp3" type="audio/mpeg">
+    </audio>
+    <div id="musicBtn" onclick="toggleMusic()">🔇</div>
+
     <div class="card">
-        <div class="heart-main">❤️</div>
-        <p style="color: #2bda1f; font-size: 22px; font-weight: bold;">{{.Message}}</p>
+        <div class="heart-main" onclick="toggleMusic()">❤️</div>
+        <p style="color: #ff4b2b; font-size: 22px; font-weight: bold;">{{.Message}}</p>
         <form action="/reply" method="POST">
             <input type="text" name="reply_text" placeholder="Javobingizni yozing..." required>
             <br>
             <button type="submit">Yuborish</button>
         </form>
     </div>
+
     <script>
+        const music = document.getElementById('bgMusic');
+        const btn = document.getElementById('musicBtn');
+        function toggleMusic() {
+            if (music.paused) { music.play(); btn.innerHTML = '🔊'; }
+            else { music.pause(); btn.innerHTML = '🔇'; }
+        }
         function createHeart() {
             const heart = document.createElement('div');
             heart.classList.add('floating-heart');
@@ -37,6 +50,7 @@
             setTimeout(() => { heart.remove(); }, 5000);
         }
         setInterval(createHeart, 400);
+        document.body.addEventListener('click', () => { if(music.paused) toggleMusic(); }, {once: true});
     </script>
 </body>
 </html>

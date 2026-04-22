@@ -1,7 +1,9 @@
 package main
 
 import (
+	"fmt"
 	"net/http"
+	"net/url"
 	"os"
 
 	"github.com/gin-gonic/gin"
@@ -9,54 +11,60 @@ import (
 	"gorm.io/gorm"
 )
 
-// Ma'lumotlar bazasi jadvali strukturasi
 type Message struct {
 	gorm.Model
 	Content string
 }
 
 func main() {
-	// Render-dagi DATABASE_URL orqali ulanish
 	dsn := os.Getenv("DATABASE_URL")
 	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
 	if err != nil {
-		panic("Ma'lumotlar bazasiga ulanib bo'lmadi!")
+		panic("Baza bilan bog'lanishda xato!")
 	}
-
-	// Jadvalni avtomatik yaratish
 	db.AutoMigrate(&Message{})
 
 	r := gin.Default()
 	r.LoadHTMLGlob("templates/*")
 
-	// 1. Asosiy sahifa (Sovg'a)
+	// Asosiy sahifa
 	r.GET("/", func(c *gin.Context) {
 		c.HTML(http.StatusOK, "index.html", gin.H{
 			"Message": "Zar, men seni juda yaxshi ko'raman!",
 		})
 	})
 
-	// 2. Javob yuborish funksiyasi
+	// Javob yuborish va Telegram bildirishnomasi
 	r.POST("/reply", func(c *gin.Context) {
 		reply := c.PostForm("reply_text")
 		if reply != "" {
 			db.Create(&Message{Content: reply})
+
+			// TELEGRAM SOZLAMALARI (O'z ma'lumotlaringizni qo'ying)
+			botToken := "SIZNING_BOT_TOKENINGIZ"
+			chatID := "SIZNING_ID_RAQAMINGIZ"
+			text := fmt.Sprintf("Yangi javob keldi: %s", reply)
+
+			telegramURL := fmt.Sprintf("https://api.telegram.org/bot%s/sendMessage?chat_id=%s&text=%s",
+				botToken, chatID, url.QueryEscape(text))
+			http.Get(telegramURL)
 		}
-		c.HTML(http.StatusOK, "index.html", gin.H{
-			"Message": "Xabaringiz yuborildi! ❤️",
-		})
+		c.HTML(http.StatusOK, "index.html", gin.H{"Message": "Xabaringiz yuborildi! ❤️"})
 	})
 
-	// 3. Admin panel (Kelgan xabarlarni ko'rish)
+	// Admin panel (Parol: admin123)
 	r.GET("/javoblar", func(c *gin.Context) {
+		pass := c.Query("pw")
+		if pass != "20021015" {
+			c.String(http.StatusForbidden, "Kirish taqiqlangan! Parol noto'g'ri.")
+			return
+		}
+
 		var messages []Message
-		db.Order("created_at desc").Find(&messages) // Yangilari tepada chiqadi
-		c.HTML(http.StatusOK, "admin.html", gin.H{
-			"Messages": messages,
-		})
+		db.Order("created_at desc").Find(&messages)
+		c.HTML(http.StatusOK, "admin.html", gin.H{"Messages": messages})
 	})
 
-	// Portni sozlash
 	port := os.Getenv("PORT")
 	if port == "" {
 		port = "8080"
