@@ -5,30 +5,80 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Siz uchun maxsus</title>
     <style>
-        body { margin: 0; height: 100vh; overflow: hidden; display: flex; justify-content: center; align-items: center; background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%); font-family: 'Segoe UI', sans-serif; }
-        .card { background: white; padding: 30px; border-radius: 30px; box-shadow: 0 15px 35px rgba(0,0,0,0.2); text-align: center; max-width: 350px; width: 85%; z-index: 10; }
-        .heart-main { color: #ff4b2b; font-size: 60px; animation: beat .3s infinite alternate; }
-        @keyframes beat { to { transform: scale(1.1); } }
-        .floating-heart { position: absolute; color: #ff4b2b; opacity: 0.6; font-size: 20px; animation: float 4s linear infinite; pointer-events: none; }
-        @keyframes float { 0% { transform: translateY(100vh) rotate(0deg); opacity: 1; } 100% { transform: translateY(-10vh) rotate(360deg); opacity: 0; } }
-        input { padding: 12px; border-radius: 10px; border: 1px solid #ddd; width: 80%; margin-top: 15px; outline: none; }
-        button { margin-top: 10px; padding: 10px 20px; background: #ff4b2b; color: white; border: none; border-radius: 20px; cursor: pointer; transition: 0.3s; }
-        button:hover { background: #ff2a05; transform: scale(1.05); }
+        body { 
+            margin: 0; 
+            height: 100vh; 
+            overflow: hidden; 
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+            background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%); 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+        }
+        .card { 
+            background: white; 
+            padding: 40px; 
+            border-radius: 30px; 
+            box-shadow: 0 15px 35px rgba(0,0,0,0.2); 
+            text-align: center; 
+            max-width: 400px; 
+            width: 90%; 
+            z-index: 10; 
+            position: relative;
+        }
+        .heart-main { 
+            color: #ff4b2b; 
+            font-size: 80px; 
+            margin-bottom: 20px;
+            animation: beat .4s infinite alternate; 
+        }
+        @keyframes beat { 
+            to { transform: scale(1.15); } 
+        }
+        .floating-heart { 
+            position: absolute; 
+            color: #ff4b2b; 
+            opacity: 0.6; 
+            font-size: 20px; 
+            animation: float 4s linear infinite; 
+            pointer-events: none; 
+        }
+        @keyframes float { 
+            0% { transform: translateY(100vh) rotate(0deg); opacity: 1; } 
+            100% { transform: translateY(-10vh) rotate(360deg); opacity: 0; } 
+        }
+        input { 
+            padding: 15px; 
+            border-radius: 15px; 
+            border: 1px solid #ff9a9e; 
+            width: 85%; 
+            margin-top: 20px; 
+            outline: none; 
+            font-size: 16px;
+        }
+        button { 
+            margin-top: 15px; 
+            padding: 12px 30px; 
+            background: #ff4b2b; 
+            color: #42299b; 
+            border: none; 
+            border-radius: 25px; 
+            cursor: pointer; 
+            font-size: 18px;
+            transition: 0.3s ease; 
+        }
+        button:hover { 
+            background: #ff2a05; 
+            transform: scale(1.1); 
+            box-shadow: 0 5px 15px rgba(255, 75, 43, 0.4);
+        }
     </style>
 </head>
 <body>
     <div class="card">
-        <form action="/reply" method="POST" style="margin-top: 20px;">
-    <input type="text" name="reply_text" placeholder="Menga javob yozing..." required 
-           style="padding: 10px; border-radius: 10px; border: 1px solid #ddd; width: 80%; outline: none;">
-    <br>
-    <button type="submit" 
-            style="margin-top: 10px; padding: 10px 20px; background: #ff4b2b; color: white; border: none; border-radius: 20px; cursor: pointer;">
-        Yuborish
-    </button>
-</form>
         <div class="heart-main">❤️</div>
-        <p style="color: #ff4b2b; font-size: 20px; font-weight: bold;">{{.Message}}</p>
+        <h2 style="color: #333; margin-bottom: 10px;">Salom, Zar!</h2>
+        <p style="color: #ff4b2b; font-size: 20px; font-weight: bold; margin-bottom: 25px;">{{.Message}}</p>
         
         <form action="/reply" method="POST">
             <input type="text" name="reply_text" placeholder="Javobingizni yozing..." required>
@@ -47,7 +97,7 @@
             document.body.appendChild(heart);
             setTimeout(() => { heart.remove(); }, 5000);
         }
-        setInterval(createHeart, 400);
+        setInterval(createHeart, 300);
     </script>
 </body>
 </html>
