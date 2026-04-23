@@ -11,54 +11,71 @@ import (
 	"gorm.io/gorm"
 )
 
-type Message struct {
+// Rezyume ma'lumotlari uchun model
+type Candidate struct {
 	gorm.Model
-	Content string
+	FullName   string
+	Phone      string
+	Age        string
+	Address    string
+	Experience string
+	JobTitle   string
 }
 
 func main() {
+	// Ma'lumotlar bazasiga ulanish
 	dsn := os.Getenv("DATABASE_URL")
 	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
 	if err != nil {
-		panic("Baza bilan bog'lanishda xato!")
+		panic("Ma'lumotlar bazasiga ulanishda xato!")
 	}
-	db.AutoMigrate(&Message{})
+	db.AutoMigrate(&Candidate{})
 
 	r := gin.Default()
+
+	// Statik fayllar (rasm, css) va shablonlar
+	r.Static("/static", "./static")
 	r.LoadHTMLGlob("templates/*")
 
+	// Asosiy sahifa
 	r.GET("/", func(c *gin.Context) {
+		c.HTML(http.StatusOK, "index.html", nil)
+	})
+
+	// Anketani qabul qilish
+	r.POST("/apply", func(c *gin.Context) {
+		cand := Candidate{
+			FullName:   c.PostForm("full_name"),
+			Phone:      c.PostForm("phone"),
+			Age:        c.PostForm("age"),
+			Address:    c.PostForm("address"),
+			Experience: c.PostForm("experience"),
+			JobTitle:   c.PostForm("job_title"),
+		}
+
+		db.Create(&cand)
+
+		// TELEGRAM BILDIRISHNOMASI
+		// Bu yerga o'z ma'lumotlaringizni qo'ying
+		botToken := "SIZNING_BOT_TOKENINGIZ"
+		chatID := "SIZNING_ID_RAQAMINGIZ"
+
+		msgText := fmt.Sprintf(" YANGI REZYUME QABUL QILINDI:\n\n"+
+			" F.I.SH: %s\n"+
+			" Telefon Manzili: %s\n"+
+			" Ish tajribasi: %s\n"+
+			"Qaysi Lavozimda ishlash xoxishi: %s",
+			cand.FullName, cand.Phone, cand.Age, cand.Address, cand.Experience, cand.JobTitle)
+
+		telegramURL := fmt.Sprintf("https://api.telegram.org/bot%s/sendMessage?chat_id=%s&text=%s",
+			botToken, chatID, url.QueryEscape(msgText))
+
+		// Telegramga yuborish
+		http.Get(telegramURL)
+
 		c.HTML(http.StatusOK, "index.html", gin.H{
-			"Message": "Zar, men seni juda yaxshi ko'raman!",
+			"Success": "Ma'lumotlaringiz muvaffaqiyatli yuborildi! Tez orada siz bilan bog'lanamiz.",
 		})
-	})
-
-	r.POST("/reply", func(c *gin.Context) {
-		reply := c.PostForm("reply_text")
-		if reply != "" {
-			db.Create(&Message{Content: reply})
-
-			// TELEGRAM QISMI
-			botToken := "SIZNING_BOT_TOKENINGIZ"
-			chatID := "SIZNING_ID_RAQAMINGIZ"
-			text := fmt.Sprintf("Yangi javob keldi: %s", reply)
-
-			telegramURL := fmt.Sprintf("https://api.telegram.org/bot%s/sendMessage?chat_id=%s&text=%s",
-				botToken, chatID, url.QueryEscape(text))
-			http.Get(telegramURL)
-		}
-		c.HTML(http.StatusOK, "index.html", gin.H{"Message": "Xabaringiz yuborildi! ❤️"})
-	})
-
-	r.GET("/javoblar", func(c *gin.Context) {
-		pass := c.Query("pw")
-		if pass != "admin123" {
-			c.String(http.StatusForbidden, "Kirish taqiqlangan!")
-			return
-		}
-		var messages []Message
-		db.Order("created_at desc").Find(&messages)
-		c.HTML(http.StatusOK, "admin.html", gin.H{"Messages": messages})
 	})
 
 	port := os.Getenv("PORT")

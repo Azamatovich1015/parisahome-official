@@ -3,59 +3,72 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Siz uchun maxsus</title>
+    <title>Parisahome | Ishga Qabul</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
-        body { margin: 0; height: 100vh; overflow: hidden; display: flex; justify-content: center; align-items: center; background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%); font-family: 'Segoe UI', sans-serif; cursor: pointer; }
-        .card { background: white; padding: 40px; border-radius: 30px; box-shadow: 0 15px 35px rgba(0,0,0,0.2); text-align: center; max-width: 350px; width: 85%; z-index: 10; position: relative; }
-        .heart-main { color: #ff4b2b; font-size: 70px; animation: beat .4s infinite alternate; }
-        @keyframes beat { to { transform: scale(1.1); } }
-        .floating-heart { position: absolute; color: #ff4b2b; opacity: 0.6; font-size: 20px; animation: float 4s linear infinite; pointer-events: none; }
-        @keyframes float { 0% { transform: translateY(100vh) rotate(0deg); opacity: 1; } 100% { transform: translateY(-10vh) rotate(360deg); opacity: 0; } }
-        input { padding: 12px; border-radius: 12px; border: 1px solid #ff9a9e; width: 85%; margin-top: 20px; outline: none; }
-        button { margin-top: 15px; padding: 10px 25px; background: #ff4b2b; color: white; border: none; border-radius: 20px; cursor: pointer; transition: 0.3s; font-weight: bold; }
-        #musicStatus { position: fixed; bottom: 20px; left: 20px; background: rgba(255,255,255,0.7); padding: 5px 15px; border-radius: 20px; font-size: 14px; color: #ff4b2b; }
+        :root { --gold: #D4AF37; --dark: #2c2c2c; }
+        body { background-color: #f4f6f9; font-family: 'Segoe UI', sans-serif; }
+        .navbar { background: white; border-bottom: 4px solid var(--gold); padding: 15px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
+        .form-container { max-width: 600px; background: white; border-radius: 20px; padding: 40px; margin: 40px auto; box-shadow: 0 15px 35px rgba(0,0,0,0.1); }
+        h2 { color: var(--dark); font-weight: bold; text-align: center; margin-bottom: 30px; }
+        label { font-weight: 600; color: #555; margin-top: 15px; display: block; }
+        .form-control { border-radius: 10px; padding: 12px; border: 1px solid #ddd; }
+        .form-control:focus { border-color: var(--gold); box-shadow: 0 0 0 0.2rem rgba(212, 175, 55, 0.1); }
+        .btn-send { background: var(--gold); color: white; border: none; padding: 14px; border-radius: 10px; font-weight: bold; width: 100%; margin-top: 25px; transition: 0.3s; }
+        .btn-send:hover { background: #b8962d; transform: translateY(-2px); }
+        .logo-img { max-height: 80px; margin-bottom: 10px; }
     </style>
 </head>
 <body>
-    <audio id="bgMusic" loop preload="auto">
-        <source src="https://cdn.pixabay.com/audio/2022/05/27/audio_1808f3030e.mp3" type="audio/mpeg">
-    </audio>
 
-    <div id="musicStatus">Musiqa uchun ekranga bosing 🎵</div>
+<nav class="navbar">
+    <div class="container d-flex justify-content-center">
+        <img src="/static/logo.png" alt="Parisahome Logo" class="logo-img" onerror="this.src='https://via.placeholder.com/200x80?text=Parisahome'">
+    </div>
+</nav>
 
-    <div class="card">
-        <div class="heart-main">❤️</div>
-        <p style="color: #ff4b2b; font-size: 22px; font-weight: bold;">{{.Message}}</p>
-        <form action="/reply" method="POST">
-            <input type="text" name="reply_text" placeholder="Javobingizni yozing..." required>
-            <br>
-            <button type="submit">Yuborish</button>
+<div class="container">
+    <div class="form-container">
+        <h2>Ishga qabul anketasi</h2>
+
+        {{if .Success}}
+            <div class="alert alert-success border-0 shadow-sm">{{.Success}}</div>
+        {{end}}
+
+        <form action="/apply" method="POST">
+            <label>Familiya ismingiz to’liq (F.I.SH)</label>
+            <input type="text" name="full_name" class="form-control" placeholder="Ismingizni kiriting" required>
+
+            <label>Telefon raqamingiz</label>
+            <input type="tel" name="phone" class="form-control" placeholder="+998 90 123 45 67" required>
+
+            <label>Yoshingiz</label>
+            <input type="number" name="age" class="form-control" placeholder="Yoshingizni kiriting" required>
+
+            <label>Manzilingiz</label>
+            <input type="text" name="address" class="form-control" placeholder="Viloyat, shahar, tuman" required>
+
+            <label>Ish tajribangiz</label>
+            <textarea name="experience" class="form-control" rows="3" placeholder="Avvalgi ish joylaringiz haqida qisqacha"></textarea>
+
+            <label>Qaysi lavozimda ishlashni xohlaysiz?</label>
+            <select name="job_title" class="form-select mb-3" style="border-radius: 10px; padding: 12px;" required>
+                <option value="">Lavozimni tanlang...</option>
+                <option value="Menejer">Menejer</option>
+                <option value="Interyer dizayner">Interyer dizayner</option>
+                <option value="Sotuvchi-maslahatchi">Sotuvchi-maslahatchi</option>
+                <option value="Administrator">Administrator</option>
+                <option value="Usta">Usta</option>
+            </select>
+
+            <button type="submit" class="btn btn-send">Anketani yuborish</button>
         </form>
     </div>
+</div>
 
-    <script>
-        const music = document.getElementById('bgMusic');
-        const status = document.getElementById('musicStatus');
+<footer class="text-center py-4 text-muted">
+    <small>&copy; 2026 Parisahome | Barcha huquqlar himoyalangan</small>
+</footer>
 
-        // Saytga birinchi marta bosganda musiqa chalinsin
-        document.body.addEventListener('click', function() {
-            if (music.paused) {
-                music.play().then(() => {
-                    status.innerHTML = "Musiqa yangramoqda 🔊";
-                }).catch(e => console.log("Xato:", e));
-            }
-        }, { once: false });
-
-        function createHeart() {
-            const heart = document.createElement('div');
-            heart.classList.add('floating-heart');
-            heart.innerHTML = '❤️';
-            heart.style.left = Math.random() * 100 + 'vw';
-            heart.style.animationDuration = Math.random() * 2 + 3 + 's';
-            document.body.appendChild(heart);
-            setTimeout(() => { heart.remove(); }, 5000);
-        }
-        setInterval(createHeart, 400);
-    </script>
 </body>
 </html>
