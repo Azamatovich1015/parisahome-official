@@ -74,8 +74,8 @@ func main() {
 		}
 
 		// Telegramga yuborish (TOKEN va ID'ni o'zingiznikiga almashtiring)
-		botToken := "SIZNING_BOT_TOKENINGIZ"
-		chatID := "SIZNING_CHAT_ID_RAQAMINGIZ"
+		botToken := "8256517822:AAH1tYGXqxWa9w1OwtWaL4byr4oy5jzuxik"
+		chatID := "5531320866"
 
 		msgText := fmt.Sprintf(" YANGI ANKETA QABUL QILINDI:\n\n"+
 			" F.I.SH: %s\n"+
